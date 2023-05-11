@@ -1,0 +1,39 @@
+{
+  "name": "server",
+  "description": "server for timelock pastebin",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly -d ./src/index.ts && esbuild ./src/index.ts --bundle --platform=node --target=node19 --outfile=index.js",
+    "check": "tsc --noEmit",
+    "ci": "npm run build && npm run lint && npm run check && npm run test",
+    "clean": "rm -rf ./dist/*",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "start": "ts-node ./src/index.ts",
+    "test": "jest ./test/*.test.ts"
+  },
+  "author": "CluEleSsUK",
+  "license": "(Apache-2.0 OR MIT)",
+  "devDependencies": {
+    "@jest/globals": "^29.5.0",
+    "@types/chai": "^4.3.1",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.16.7",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "chai": "^4.3.6",
+    "esbuild": "0.17.16",
+    "eslint": "^8.19.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">= 19.0.0"
+  },
+  "dependencies": {
+    "tlock-js": "^0.6.1",
+    "yup": "^1.1.1"
+  }
+}
