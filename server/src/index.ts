@@ -1,13 +1,16 @@
 import express = require("express")
+import cors = require("cors")
 import {Service} from "./service"
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 const service = new Service()
 
 app.get("/ciphertexts", (req: express.Request, res: express.Response) => {
-    return service.ciphertexts()
+
+    return service.ciphertexts(parseLimit(req, res))
         .then(ciphertexts => res.json(ciphertexts))
         .catch(err => {
             console.error(err)
@@ -16,7 +19,7 @@ app.get("/ciphertexts", (req: express.Request, res: express.Response) => {
 })
 
 app.get("/plaintexts", (req: express.Request, res: express.Response) => {
-    return service.plaintexts()
+    return service.plaintexts(parseLimit(req, res))
         .then(plaintexts => res.json(plaintexts))
         .catch(err => {
             console.error(err)
@@ -38,3 +41,14 @@ app.listen(port, () => {
     console.log(`API started on ${port}`)
     service.startDecrypting().then(() => console.log("started decryption service"))
 })
+
+function parseLimit(req: express.Request, res: express.Response): number {
+    const { limit } = req.query
+
+    try {
+        return Number.parseInt(<string>limit)
+    } catch (err) {
+        res.status(400).send({error: "limit param must be a number"})
+        throw err
+    }
+}

@@ -17,6 +17,7 @@
   "devDependencies": {
     "@jest/globals": "^29.5.0",
     "@types/chai": "^4.3.1",
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/node": "^18.16.7",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
@@ -33,6 +34,7 @@
     "node": ">= 19.0.0"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "tlock-js": "^0.6.1",
     "yup": "^1.1.1"
   }

@@ -28,12 +28,15 @@ export class OrderedStore<T extends OrderableItem> {
 
     async save(item: T): Promise<string> {
         this.store.push(item)
-        this.store = this.store.slice().sort((a, b) => b.decryptableAt - a.decryptableAt)
+        this.store = this.store.slice().sort((a, b) => a.decryptableAt - b.decryptableAt)
         return item.id
     }
 
-    async all(): Promise<Array<T>> {
-        return this.store.slice()
+    async all(limit: number): Promise<Array<T>> {
+        if (limit === 0) {
+            limit = this.store.length
+        }
+        return this.store.slice(0, limit)
     }
 
     async get(id: string): Promise<T> {

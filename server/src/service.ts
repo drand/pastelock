@@ -15,17 +15,20 @@ type AddCiphertextResponse = {
     id: string
 }
 
+const attemptDecryptionMilliseconds = 1000
+
 export class Service {
     ciphertextStore = new OrderedStore<Ciphertext>()
     plaintextStore = new OrderedStore<Plaintext>()
 
-    async plaintexts(): Promise<PlaintextsResponse> {
-        const plaintexts = await this.plaintextStore.all()
-        return {plaintexts}
+    async plaintexts(limit: number = 0): Promise<PlaintextsResponse> {
+        const plaintexts = await this.plaintextStore.all(limit)
+
+        return {plaintexts: plaintexts.slice(0, limit)}
     }
 
-    async ciphertexts(): Promise<CiphertextsResponse> {
-        const ciphertexts = await this.ciphertextStore.all()
+    async ciphertexts(limit: number = 0): Promise<CiphertextsResponse> {
+        const ciphertexts = await this.ciphertextStore.all(limit)
         return {ciphertexts}
     }
 
@@ -68,7 +71,7 @@ export class Service {
             }
 
             await this.ciphertextStore.remove(next.id)
-        }, 1000)
+        }, attemptDecryptionMilliseconds)
     }
 }
 

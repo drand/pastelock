@@ -6,6 +6,9 @@ index.d.ts
 # dependencies
 /node_modules
 server/node_modules
+client/node_modules
+client/dist
+client/.parcel-cache
 /.pnp
 .pnp.js
 
