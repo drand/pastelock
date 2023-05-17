@@ -4,7 +4,7 @@ import {encryptAndUpload} from "./api"
 
 type EncryptFormProps = {}
 export const EncryptForm = (props: EncryptFormProps) => {
-    const [time, setTime] = useState<number>(formatDate(Date.now()))
+    const [time, setTime] = useState<string>(formatDate(Date.now()))
     const [plaintext, setPlaintext] = useState("")
     const [ciphertext, setCiphertext] = useState("")
     const [isLoading, setIsLoading] = useState(false)

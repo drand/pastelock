@@ -1,6 +1,15 @@
 # Pastelock
 
-A web-app for timelocking encrypting and storing data.
+A social web-app for timelocking encrypting data, automatic decryption of it, and viewing ciphertexts/plaintexts others have uploaded.
+
+## Quickstart
+To spin up the whole application, run `docker compose build && docker compose up -d`.
+This will start the UI at `http://localhost:1234`, the API at `http://localhost:4444` and a postgres database at `postgresql://localhost:5342`.
+You can then open [http://localhost:1234](http://localhost:1234) in your browser to start adding ciphertexts!
+Encryption is performed locally before uploading to the server.
+
+
+## Development
 
 ## [./client](./client)
 
@@ -16,3 +25,4 @@ The server is a NodeJS app with an express API for submitting timelock encrypted
 automatically decrypts and serves once the decryption time has been reached.
 
 Start the server by running `cd server && npm install && npm start`. The default port is `4444`.
+

@@ -35,3 +35,8 @@ export async function fetchPlaintexts(): Promise<Array<Plaintext>> {
     const json = await response.json()
     return json.plaintexts
 }
+
+export async function fetchEntry(id: string): Promise<Plaintext> {
+    const response = await fetch(`${config.pastelockURL}/entry/${id}`)
+    return await response.json()
+}

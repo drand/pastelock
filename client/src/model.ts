@@ -9,5 +9,6 @@ export type Plaintext = {
     id: string
     createdAt: number
     decryptableAt: number
+    ciphertext: string
     plaintext: string
 }

@@ -3,10 +3,12 @@ import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {fetchPlaintexts} from "./api"
 import {useCallback, useEffect, useState} from "react"
 import {Plaintext} from "./model"
+import {useNavigate} from "react-router-dom"
 
 type RecentPlaintextsProps = {}
 export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
-    const [plaintexts, setPlaintexts] = useState<SidebarEntry>([])
+    const [plaintexts, setPlaintexts] = useState<SidebarEntry[]>([])
+    const navigate = useNavigate()
 
     const apiCall = useCallback(() => {
         fetchPlaintexts()
@@ -28,7 +30,6 @@ export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
     return <SidebarPanel
         title={"Recent decryptions"}
         values={plaintexts}
-        onClick={entry => console.log(entry.id)}
     />
 }
 

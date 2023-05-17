@@ -1,9 +1,10 @@
-import {randomUUID} from "crypto"
+import {Client} from "pg"
 import {mainnetClient, roundTime, timelockDecrypt} from "tlock-js"
 import {MAINNET_CHAIN_INFO} from "tlock-js/drand/defaults"
 import {decodeArmor, isProbablyArmored} from "tlock-js/age/armor"
 import {readAge} from "tlock-js/age/age-reader-writer"
-import {Ciphertext, ciphertextSchema, OrderedStore, Plaintext} from "./model"
+import {Ciphertext, ciphertextSchema, Plaintext} from "./model"
+import {fetchCiphertexts, fetchEntry, fetchPlaintexts, storeCiphertext, storePlaintext} from "./db"
 
 type CiphertextsResponse = {
     ciphertexts: Array<Ciphertext>
@@ -18,17 +19,17 @@ type AddCiphertextResponse = {
 const attemptDecryptionMilliseconds = 1000
 
 export class Service {
-    ciphertextStore = new OrderedStore<Ciphertext>()
-    plaintextStore = new OrderedStore<Plaintext>()
+    constructor(private client: Client) {
+    }
 
-    async plaintexts(limit: number = 0): Promise<PlaintextsResponse> {
-        const plaintexts = await this.plaintextStore.all(limit)
+    async plaintexts(limit: number = 50): Promise<PlaintextsResponse> {
+        const plaintexts = await fetchPlaintexts(this.client)
 
         return {plaintexts: plaintexts.slice(0, limit)}
     }
 
-    async ciphertexts(limit: number = 0): Promise<CiphertextsResponse> {
-        const ciphertexts = await this.ciphertextStore.all(limit)
+    async ciphertexts(limit: number = 50): Promise<CiphertextsResponse> {
+        const ciphertexts = await fetchCiphertexts(this.client, limit)
         return {ciphertexts}
     }
 
@@ -38,39 +39,38 @@ export class Service {
         if (isProbablyArmored(decodedCiphertext)) {
             decodedCiphertext = decodeArmor(decodedCiphertext)
         }
-
         const decryptableAt = decryptionTime(decodedCiphertext)
 
-        const id = await this.ciphertextStore.save({
-            id: randomUUID(),
-            createdAt: Date.now(),
-            decryptableAt: decryptableAt,
-            ciphertext: decodedCiphertext
-        })
-        return {id}
+        const ciphertext = await storeCiphertext(this.client, decodedCiphertext, decryptableAt)
+        return {id: ciphertext.id}
+    }
+
+    async byId(id: string): Promise<Plaintext> {
+        return fetchEntry(this.client, id)
     }
 
     async startDecrypting() {
         setInterval(async () => {
-            const next = await this.ciphertextStore.head()
-            if (!next || next.decryptableAt > Date.now()) {
-                console.log("nothing to decrypt")
-                return
-            }
+            // this is out here so we can rollback in the `catch`
+            let next: Ciphertext | undefined
             try {
+                const results = await fetchCiphertexts(this.client, 1)
+                next = results[0]
+                if (!next || next.decryptableAt > Date.now()) {
+                    console.log("nothing to decrypt")
+                    return
+                }
                 const plaintext = await timelockDecrypt(next.ciphertext, mainnetClient())
-                await this.plaintextStore.save({
-                    id: next.id,
-                    createdAt: next.createdAt,
-                    decryptableAt: next.decryptableAt,
-                    plaintext
-                })
+                await storePlaintext(this.client, next.id, plaintext)
                 console.log("successfully decrypted a ciphertext")
             } catch (err) {
+                if (!next) {
+                    return
+                }
                 console.error(`error decrypting cipher text ${next.id}`, err)
+                await storePlaintext(this.client, next.id, "the payload was undecryptable")
+                // we assume it's a malicious upload until there's an easy way to validate the ciphertext is valid :)
             }
-
-            await this.ciphertextStore.remove(next.id)
         }, attemptDecryptionMilliseconds)
     }
 }

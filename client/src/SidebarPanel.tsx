@@ -1,4 +1,5 @@
 import * as React from "react"
+import {Link} from "react-router-dom"
 
 export type SidebarEntry = {
     id: string
@@ -8,7 +9,6 @@ export type SidebarEntry = {
 type SidebarPanelProps = {
     title: string
     values: Array<SidebarEntry>
-    onClick: (entry: SidebarEntry) => void
 }
 export const SidebarPanel = (props: SidebarPanelProps) =>
     <div>
@@ -16,7 +16,6 @@ export const SidebarPanel = (props: SidebarPanelProps) =>
         {props.values.map(it =>
             <SidebarEntryPanel
                 entry={it}
-                onClick={props.onClick.bind(this, it)}
             />
         )}
         {props.values.length === 0 && <p>There are no ciphertexts yet :(</p>}
@@ -24,7 +23,6 @@ export const SidebarPanel = (props: SidebarPanelProps) =>
 
 type SidebarEntryProps = {
     entry: SidebarEntry
-    onClick: () => void
 }
 const SidebarEntryPanel = (props: SidebarEntryProps) => {
     const dateTime = new Date(props.entry.time)
@@ -39,9 +37,9 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
     }
 
     return (
-        <div onClick={props.onClick}>
+        <Link to={`/entry/${props.entry.id}`}>
             <p>Time: {formattedTime}</p>
             <p>Content: {content}</p>
-        </div>
+        </Link>
     )
 }
