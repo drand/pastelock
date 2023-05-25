@@ -44,7 +44,7 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
                 margin={1}
                 padding={1}
                 onClick={() => navigate(`/entry/${props.entry.id}`)}
-                sx={{ cursor: "pointer" }}
+                sx={{cursor: "pointer"}}
             >
                 <Typography>Time: {formattedTime}</Typography>
                 <Typography>Content: {content}</Typography>

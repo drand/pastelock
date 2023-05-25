@@ -3,7 +3,7 @@ import * as dayjs from "dayjs"
 import {useCallback, useState} from "react"
 import {Box, Button, Stack, TextField, Typography} from "@mui/material"
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker"
-import {encryptAndUpload} from "./api"
+import {encryptAndUpload} from "../api"
 
 type EncryptFormProps = {}
 export const EncryptForm = (props: EncryptFormProps) => {
@@ -45,7 +45,9 @@ export const EncryptForm = (props: EncryptFormProps) => {
 
     return (
         <Box padding={2}>
-            <Box padding={2}>
+            <Box
+                paddingBottom={2}
+            >
                 <DateTimePicker
                     label="Decryption Time"
                     value={time}
@@ -62,7 +64,6 @@ export const EncryptForm = (props: EncryptFormProps) => {
                 direction={"row"}
                 width={"100%"}
                 spacing={2}
-                padding={2}
             >
                 <TextField
                     label={"Plaintext"}
@@ -88,7 +89,6 @@ export const EncryptForm = (props: EncryptFormProps) => {
             <Stack
                 direction={"row"}
                 spacing={2}
-                padding={2}
             >
                 <Button
                     onClick={() => encryptAndStore()}

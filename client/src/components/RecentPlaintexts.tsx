@@ -1,8 +1,8 @@
 import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
-import {fetchPlaintexts} from "./api"
-import {Plaintext} from "./model"
+import {fetchPlaintexts} from "../api"
+import {Plaintext} from "../model"
 
 const refreshTimeMs = 5000
 export const RecentPlaintexts = () => {

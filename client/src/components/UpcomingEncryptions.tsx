@@ -1,8 +1,8 @@
 import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
-import {fetchCiphertexts} from "./api"
-import {Ciphertext} from "./model"
+import {fetchCiphertexts} from "../api"
+import {Ciphertext} from "../model"
 
 const refreshTimeMs = 5000
 export const UpcomingEncryptions = () => {

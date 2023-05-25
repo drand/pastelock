@@ -6,12 +6,12 @@ import {ThemeProvider} from "@mui/material/styles"
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider"
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
 import {themeOptions} from "./theme"
-import {EncryptForm} from "./EncryptForm"
-import {UpcomingEncryptions} from "./UpcomingEncryptions"
-import {RecentPlaintexts} from "./RecentPlaintexts"
-import {TlockEntry} from "./TlockEntry"
-import {Toolbar} from "./Toolbar"
-import {ErrorPage} from "./ErrorPage"
+import {EncryptForm} from "./components/EncryptForm"
+import {UpcomingEncryptions} from "./components/UpcomingEncryptions"
+import {RecentPlaintexts} from "./components/RecentPlaintexts"
+import {TlockEntry} from "./components/TlockEntry"
+import {Toolbar} from "./components/Toolbar"
+import {ErrorPage} from "./components/ErrorPage"
 
 const router = createBrowserRouter([{
     path: "/",
