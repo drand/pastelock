@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as dayjs from "dayjs"
 import {useCallback, useState} from "react"
-import {Box, Button, Stack, TextField, Typography} from "@mui/material"
+import {Box, Button, CircularProgress, Stack, TextField, Typography} from "@mui/material"
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker"
 import {encryptAndUpload} from "../api"
 
@@ -43,6 +43,12 @@ export const EncryptForm = (props: EncryptFormProps) => {
         dateAdvisoryText = "Note: time is in the past"
     }
 
+    // this is a space so that the element doesn't disappear when there's a ciphertext and move the buttons around
+    let ciphertextAdvisory = " "
+    if (!ciphertext) {
+        ciphertextAdvisory = "Ciphertext will appear once you hit upload"
+    }
+
     return (
         <Box padding={2}>
             <Box
@@ -77,7 +83,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
                 <TextField
                     label={"Ciphertext"}
                     value={ciphertext}
-                    helperText={ciphertext === "" ? "Ciphertext will appear once you hit upload" : ""}
+                    helperText={ciphertextAdvisory}
                     variant={"filled"}
                     fullWidth
                     multiline
@@ -103,8 +109,8 @@ export const EncryptForm = (props: EncryptFormProps) => {
                 >
                     Clear
                 </Button>
+                {isLoading && <CircularProgress/>}
             </Stack>
-            {!!isLoading && <Typography>Loading...</Typography>}
             {!!error && <Typography>{error}</Typography>}
         </Box>
     )
