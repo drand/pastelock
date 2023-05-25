@@ -4,8 +4,8 @@ import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {fetchPlaintexts} from "./api"
 import {Plaintext} from "./model"
 
-type RecentPlaintextsProps = {}
-export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
+const refreshTimeMs = 5000
+export const RecentPlaintexts = () => {
     const [plaintexts, setPlaintexts] = useState<SidebarEntry[]>([])
 
     const apiCall = useCallback(() => {
@@ -19,7 +19,7 @@ export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
 
         const id = setInterval(() => {
             apiCall()
-        }, 5000)
+        }, refreshTimeMs)
         return () => {
             clearInterval(id)
         }

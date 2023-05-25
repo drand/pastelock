@@ -2,6 +2,7 @@ import React from "react"
 import {createRoot} from "react-dom/client"
 import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom"
 import {Box, Container, Stack} from "@mui/material"
+import {ThemeProvider} from "@mui/material/styles"
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider"
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
 import {themeOptions} from "./theme"
@@ -10,18 +11,24 @@ import {UpcomingEncryptions} from "./UpcomingEncryptions"
 import {RecentPlaintexts} from "./RecentPlaintexts"
 import {TlockEntry} from "./TlockEntry"
 import {Toolbar} from "./Toolbar"
-import {ThemeProvider} from "@mui/material/styles"
+import {ErrorPage} from "./ErrorPage"
 
 const router = createBrowserRouter([{
     path: "/",
     element: <App/>,
+    errorElement: <ErrorPage/>,
     children: [{
         path: "",
-        element: <EncryptForm/>
+        element: <EncryptForm/>,
+        errorElement: <ErrorPage/>
     }, {
         path: "entry/:id",
-        element: <TlockEntry/>
+        element: <TlockEntry/>,
+        errorElement: <ErrorPage/>
     }]
+}, {
+    path: "/*",
+    element: <ErrorPage/>,
 }])
 
 createRoot(document.getElementById("container")).render(
@@ -38,7 +45,7 @@ createRoot(document.getElementById("container")).render(
 
 function App() {
     return (
-        <Container maxWidth={"xl"}  className={"App"}>
+        <Container maxWidth={"xl"} className={"App"}>
             <Toolbar/>
             <Stack direction={"row"}>
                 <Box width={3 / 4}>

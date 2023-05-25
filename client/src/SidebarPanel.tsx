@@ -1,6 +1,6 @@
 import * as React from "react"
-import {Link} from "react-router-dom"
-import {Box, Typography} from "@mui/material"
+import {useNavigate} from "react-router-dom"
+import {Box, Paper, Typography} from "@mui/material"
 
 export type SidebarEntry = {
     id: string
@@ -12,8 +12,8 @@ type SidebarPanelProps = {
     values: Array<SidebarEntry>
 }
 export const SidebarPanel = (props: SidebarPanelProps) =>
-    <Box>
-        <Typography variant={"h4"}>{props.title}</Typography>
+    <Box padding={2}>
+        <Typography variant={"h5"}>{props.title}</Typography>
         {props.values.map(it =>
             <SidebarEntryPanel
                 entry={it}
@@ -26,6 +26,7 @@ type SidebarEntryProps = {
     entry: SidebarEntry
 }
 const SidebarEntryPanel = (props: SidebarEntryProps) => {
+    const navigate = useNavigate()
     const dateTime = new Date(props.entry.time)
     const formattedTime = `${dateTime.toLocaleDateString()} ${dateTime.toLocaleTimeString()}`
 
@@ -38,9 +39,16 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
     }
 
     return (
-        <Link to={`/entry/${props.entry.id}`}>
-            <Typography>Time: {formattedTime}</Typography>
-            <Typography>Content: {content}</Typography>
-        </Link>
+        <Paper>
+            <Box
+                margin={1}
+                padding={1}
+                onClick={() => navigate(`/entry/${props.entry.id}`)}
+                sx={{ cursor: "pointer" }}
+            >
+                <Typography>Time: {formattedTime}</Typography>
+                <Typography>Content: {content}</Typography>
+            </Box>
+        </Paper>
     )
 }

@@ -4,9 +4,9 @@ import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {fetchCiphertexts} from "./api"
 import {Ciphertext} from "./model"
 
-type UpcomingEncryptionsProps = {}
-export const UpcomingEncryptions = (props: UpcomingEncryptionsProps) => {
-    const [ciphertexts, setCiphertexts] = useState<SidebarEntry>([])
+const refreshTimeMs = 5000
+export const UpcomingEncryptions = () => {
+    const [ciphertexts, setCiphertexts] = useState<Array<SidebarEntry>>([])
 
     const apiCall = useCallback(() => {
         fetchCiphertexts()
@@ -19,7 +19,7 @@ export const UpcomingEncryptions = (props: UpcomingEncryptionsProps) => {
 
         const id = setInterval(() => {
             apiCall()
-        }, 5000)
+        }, refreshTimeMs)
         return () => {
             clearInterval(id)
         }
@@ -28,7 +28,6 @@ export const UpcomingEncryptions = (props: UpcomingEncryptionsProps) => {
     return <SidebarPanel
         title={"Upcoming decryptions"}
         values={ciphertexts}
-        onClick={entry => console.log(entry.id)}
     />
 }
 
