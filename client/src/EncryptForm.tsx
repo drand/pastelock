@@ -1,10 +1,13 @@
 import * as React from "react"
-import {PropsWithChildren, useCallback, useState} from "react"
+import {useCallback, useState} from "react"
 import {encryptAndUpload} from "./api"
+import {Box, Button, Stack, TextField, Typography} from "@mui/material"
+import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker"
+import * as dayjs from "dayjs"
 
 type EncryptFormProps = {}
 export const EncryptForm = (props: EncryptFormProps) => {
-    const [time, setTime] = useState<string>(formatDate(Date.now()))
+    const [time, setTime] = useState(dayjs(formatDate(Date.now())))
     const [plaintext, setPlaintext] = useState("")
     const [ciphertext, setCiphertext] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -22,54 +25,90 @@ export const EncryptForm = (props: EncryptFormProps) => {
 
         setError("")
         setIsLoading(true)
-        encryptAndUpload(Date.parse(time), plaintext)
+        encryptAndUpload(time.toDate().getTime(), plaintext)
             .then(c => setCiphertext(c))
             .catch(err => setError(err.message))
             .then(() => setIsLoading(false))
     }, [plaintext, time])
 
     const clear = useCallback(() => {
-        setTime(formatDate(Date.now()))
+        setTime(dayjs(formatDate(Date.now())))
         setPlaintext("")
         setCiphertext("")
         setError("")
     }, [])
 
-    return (
-        <div>
-            <input
-                type={"datetime-local"}
-                value={time}
-                onChange={event => setTime(event.target.value)}
-            />
-            <textarea
-                value={plaintext}
-                onChange={event => setPlaintext(event.target.value)}
-            />
-            <textarea
-                value={ciphertext}
-                readOnly
-            />
-            <button
-                onClick={() => encryptAndStore()}
-                disabled={isLoading}
-            >
-                Upload
-            </button>
-            <button
-                onClick={() => clear()}
-            >
-                Clear
-            </button>
+    let dateAdvisoryText = ""
+    if (time.isBefore(dayjs(Date.now()).subtract(1, "minute"))) {
+        dateAdvisoryText = "Note: time is in the past"
+    }
 
-            {!!isLoading && <p>Loading...</p>}
-            {!!error && <Error>{error}</Error>}
-        </div>
+    return (
+        <Box padding={2}>
+            <Box padding={2}>
+                <DateTimePicker
+                    label="Decryption Time"
+                    value={time}
+                    onChange={value => setTime(dayjs(value))}
+                />
+                <Typography
+                    variant={"subtitle2"}
+                    color={"warning.main"}
+                >
+                    {dateAdvisoryText}
+                </Typography>
+            </Box>
+            <Stack
+                direction={"row"}
+                width={"100%"}
+                spacing={2}
+                padding={2}
+            >
+                <TextField
+                    label={"Plaintext"}
+                    value={plaintext}
+                    variant={"filled"}
+                    fullWidth
+                    onChange={event => setPlaintext(event.target.value)}
+                    multiline
+                    minRows={20}
+                />
+                <TextField
+                    label={"Ciphertext"}
+                    value={ciphertext}
+                    helperText={ciphertext === "" ? "Ciphertext will appear once you hit upload" : ""}
+                    variant={"filled"}
+                    fullWidth
+                    multiline
+                    disabled
+                    minRows={20}
+                />
+            </Stack>
+
+            <Stack
+                direction={"row"}
+                spacing={2}
+                padding={2}
+            >
+                <Button
+                    onClick={() => encryptAndStore()}
+                    disabled={isLoading}
+                    variant={"outlined"}
+                >
+                    Upload
+                </Button>
+                <Button
+                    onClick={() => clear()}
+                    variant={"outlined"}
+                >
+                    Clear
+                </Button>
+            </Stack>
+            {!!isLoading && <Typography>Loading...</Typography>}
+            {!!error && <Typography>{error}</Typography>}
+        </Box>
     )
 }
-
-const Error = (props: PropsWithChildren) =>
-    <p style={{color: "red "}}>{props.children}</p>
 
 // for compatibility with the shitty `datetime-local` input
 function formatDate(time: number): string {

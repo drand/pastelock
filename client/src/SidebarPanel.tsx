@@ -1,5 +1,6 @@
 import * as React from "react"
 import {Link} from "react-router-dom"
+import {Box, Typography} from "@mui/material"
 
 export type SidebarEntry = {
     id: string
@@ -11,15 +12,15 @@ type SidebarPanelProps = {
     values: Array<SidebarEntry>
 }
 export const SidebarPanel = (props: SidebarPanelProps) =>
-    <div>
-        <h3>{props.title}</h3>
+    <Box>
+        <Typography variant={"h4"}>{props.title}</Typography>
         {props.values.map(it =>
             <SidebarEntryPanel
                 entry={it}
             />
         )}
-        {props.values.length === 0 && <p>There are no ciphertexts yet :(</p>}
-    </div>
+        {props.values.length === 0 && <Typography>There are no ciphertexts yet :(</Typography>}
+    </Box>
 
 type SidebarEntryProps = {
     entry: SidebarEntry
@@ -38,8 +39,8 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
 
     return (
         <Link to={`/entry/${props.entry.id}`}>
-            <p>Time: {formattedTime}</p>
-            <p>Content: {content}</p>
+            <Typography>Time: {formattedTime}</Typography>
+            <Typography>Content: {content}</Typography>
         </Link>
     )
 }

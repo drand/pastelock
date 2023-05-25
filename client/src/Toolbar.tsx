@@ -1,13 +1,12 @@
 import * as React from "react"
 import {NavLink} from "react-router-dom"
 
+import {Toolbar as MaterialToolbar} from "@mui/material"
+
 export const Toolbar = () => {
     return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column"
-        }}>
+        <MaterialToolbar>
             <NavLink to={"/"}>Upload</NavLink>
-        </div>
+        </MaterialToolbar>
     )
 }

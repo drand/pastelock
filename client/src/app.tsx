@@ -1,12 +1,16 @@
 import React from "react"
 import {createRoot} from "react-dom/client"
+import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom"
+import {Box, Container, Stack} from "@mui/material"
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider"
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
+import {themeOptions} from "./theme"
 import {EncryptForm} from "./EncryptForm"
 import {UpcomingEncryptions} from "./UpcomingEncryptions"
 import {RecentPlaintexts} from "./RecentPlaintexts"
-import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom"
 import {TlockEntry} from "./TlockEntry"
 import {Toolbar} from "./Toolbar"
-import {SideBySide, Stacked} from "./layout"
+import {ThemeProvider} from "@mui/material/styles"
 
 const router = createBrowserRouter([{
     path: "/",
@@ -16,33 +20,35 @@ const router = createBrowserRouter([{
         element: <EncryptForm/>
     }, {
         path: "entry/:id",
-        element: <TlockEntry />
+        element: <TlockEntry/>
     }]
 }])
 
 createRoot(document.getElementById("container")).render(
     <React.StrictMode>
-        <RouterProvider router={router}>
-            <App/>
-        </RouterProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <ThemeProvider theme={themeOptions}>
+                <RouterProvider router={router}>
+                    <App/>
+                </RouterProvider>
+            </ThemeProvider>
+        </LocalizationProvider>
     </React.StrictMode>
 )
 
 function App() {
     return (
-        <Stacked>
+        <Container maxWidth={"xl"}  className={"App"}>
             <Toolbar/>
-            <SideBySide>
-                <div style={{
-                    flex: 2
-                }}>
+            <Stack direction={"row"}>
+                <Box width={3 / 4}>
                     <Outlet/>
-                </div>
-                <Stacked>
+                </Box>
+                <Stack width={1 / 4}>
                     <RecentPlaintexts/>
                     <UpcomingEncryptions/>
-                </Stacked>
-            </SideBySide>
-        </Stacked>
+                </Stack>
+            </Stack>
+        </Container>
     )
 }

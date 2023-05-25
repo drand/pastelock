@@ -1,4 +1,10 @@
 
 html, body {
     margin: 0 auto;
+    background-color: #32292f;
+    color: #D1E3DD;
+}
+
+a {
+    color: #D1E3DD;
 }

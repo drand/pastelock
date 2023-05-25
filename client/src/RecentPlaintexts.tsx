@@ -1,14 +1,12 @@
 import * as React from "react"
+import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {fetchPlaintexts} from "./api"
-import {useCallback, useEffect, useState} from "react"
 import {Plaintext} from "./model"
-import {useNavigate} from "react-router-dom"
 
 type RecentPlaintextsProps = {}
 export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
     const [plaintexts, setPlaintexts] = useState<SidebarEntry[]>([])
-    const navigate = useNavigate()
 
     const apiCall = useCallback(() => {
         fetchPlaintexts()
