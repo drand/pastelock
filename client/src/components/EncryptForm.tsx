@@ -4,6 +4,7 @@ import {useCallback, useState} from "react"
 import {Box, Button, CircularProgress, Stack, TextField, Typography} from "@mui/material"
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker"
 import {encryptAndUpload} from "../api"
+import {TagsInput} from "./TagsInput"
 
 type EncryptFormProps = {}
 export const EncryptForm = (props: EncryptFormProps) => {
@@ -66,6 +67,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
                     {dateAdvisoryText}
                 </Typography>
             </Box>
+            <TagsInput max={5}/>
             <Stack
                 direction={"row"}
                 width={"100%"}
@@ -98,13 +100,14 @@ export const EncryptForm = (props: EncryptFormProps) => {
             >
                 <Button
                     onClick={() => encryptAndStore()}
-                    disabled={isLoading}
+                    disabled={isLoading || plaintext === ""}
                     variant={"outlined"}
                 >
                     Upload
                 </Button>
                 <Button
                     onClick={() => clear()}
+                    disabled={plaintext === ""}
                     variant={"outlined"}
                 >
                     Clear
