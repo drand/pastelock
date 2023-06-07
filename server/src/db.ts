@@ -13,7 +13,6 @@ type Row = {
 export async function createConnectedClient(config: Config): Promise<Client> {
     const client = new Client({
         host: config.dbURL,
-
     })
     await client.connect()
     await client.query(bootstrap)
