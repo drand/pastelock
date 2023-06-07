@@ -4,7 +4,7 @@ import {MAINNET_CHAIN_INFO} from "tlock-js/drand/defaults"
 import {Ciphertext, Plaintext} from "./model"
 
 const config = {
-    pastelockURL: "http://localhost:4444"
+    pastelockURL: process.env.API_URL ?? "http://localhost:4444"
 }
 
 export async function encryptAndUpload(time: number, plaintext: string): Promise<string> {
