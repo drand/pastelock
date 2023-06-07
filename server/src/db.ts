@@ -16,7 +16,8 @@ export async function createConnectedClient(config: Config): Promise<Client> {
         user: config.dbUsername,
         port: config.dbPort,
         database: config.dbName,
-        password: config.dbPassword
+        password: config.dbPassword,
+        ssl: true
     })
     await client.connect()
     await client.query(bootstrap)
