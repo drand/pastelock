@@ -25,8 +25,5 @@
     "serve": "^14.2.0",
     "tlock-js": "^0.6.1",
     "typescript": "^5.0.4"
-  },
-  "engines": {
-    "node": "19.x"
   }
 }
