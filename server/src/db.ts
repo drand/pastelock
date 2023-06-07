@@ -15,7 +15,7 @@ export async function createConnectedClient(config: Config): Promise<Client> {
         host: config.dbURL,
         user: config.dbUsername,
         port: config.dbPort,
-        database: "postgres",
+        database: config.dbName,
         password: config.dbPassword
     })
     await client.connect()

@@ -1,14 +1,16 @@
 export type Config = {
     dbURL: string
     dbPort: number,
+    dbName: string,
     dbUsername: string
     dbPassword: string
 }
 
 export function createConfig(): Config {
     return {
-        dbURL: envOrExplode("DATABASE_URL"),
+        dbURL: envOrExplode("DB_URL"),
         dbPort: Number.parseInt(envOrExplode("DB_PORT"), 10),
+        dbName: envOrExplode("DB_NAME"),
         dbUsername: envOrExplode("DB_USERNAME"),
         dbPassword: envOrExplode("DB_PASSWORD"),
     }
