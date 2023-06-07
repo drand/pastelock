@@ -1,0 +1,20 @@
+{
+  "name": "tlock-pastebin",
+  "version": "1.0.0",
+  "description": "A social web-app for timelocking encrypting data, automatic decryption of it, and viewing ciphertexts/plaintexts others have uploaded.",
+  "main": "index.js",
+  "scripts": {
+    "deploy:client": "git subtree push --prefix client heroku-client master",
+    "deploy:server": "git subtree push --prefix server heroku-server master"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drand/pastelock.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drand/pastelock/issues"
+  },
+  "homepage": "https://github.com/drand/pastelock#readme"
+}
