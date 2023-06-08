@@ -9,7 +9,7 @@
     "clean": "rm -rf ./dist/*",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "start": "npm run build && node ./index.js",
+    "start": "node ./index.js",
     "start:dev": "ts-node ./src/index.ts",
     "test": "jest ./test/*.test.ts"
   },
