@@ -1,4 +1,4 @@
-import {Client, ClientConfig} from "pg"
+import {Client} from "pg"
 import {Config} from "./config"
 import {Ciphertext, Plaintext} from "./model"
 
@@ -12,26 +12,15 @@ type Row = {
 }
 
 export async function createConnectedClient(config: Config): Promise<Client> {
-    const clientConf: ClientConfig = {
-        host: config.dbURL,
-        user: config.dbUsername,
-        port: config.dbPort,
-        database: config.dbName,
-        password: config.dbPassword,
-    }
-    if (config.ssl) {
-        console.log("SSL enabled")
-        clientConf.ssl = {
-            rejectUnauthorized: false
-        }
-    }
     const client = new Client({
-        host: config.dbURL,
-        user: config.dbUsername,
-        port: config.dbPort,
-        database: config.dbName,
-        password: config.dbPassword,
-    })
+            host: config.dbURL,
+            user: config.dbUsername,
+            port: config.dbPort,
+            database: config.dbName,
+            password: config.dbPassword,
+            ssl: config.ssl ? {rejectUnauthorized: false} : false
+        }
+    )
 
     await client.connect()
     await client.query(bootstrap)
