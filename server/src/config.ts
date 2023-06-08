@@ -8,6 +8,7 @@ export type Config = {
 }
 
 export function createConfig(): Config {
+    console.log(process.env["DB_SSL"])
     return {
         dbURL: envOrExplode("DB_URL"),
         dbPort: Number.parseInt(envOrExplode("DB_PORT"), 10),
