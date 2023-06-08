@@ -20,6 +20,7 @@ export async function createConnectedClient(config: Config): Promise<Client> {
         password: config.dbPassword,
     }
     if (config.ssl) {
+        console.log("SSL enabled")
         clientConf.ssl = {
             rejectUnauthorized: false
         }
