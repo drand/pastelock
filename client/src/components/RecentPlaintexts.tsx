@@ -36,5 +36,6 @@ function remapPlaintexts(plaintexts: Array<Plaintext>): Array<SidebarEntry> {
         id: it.id,
         time: it.decryptableAt,
         content: it.plaintext,
+        tags: it.tags
     }))
 }

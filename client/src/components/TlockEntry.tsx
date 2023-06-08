@@ -1,13 +1,11 @@
 import * as React from "react"
 import {useParams} from "react-router-dom"
 import {useEffect, useState} from "react"
+import {Chip, Table, TableBody, TableCell, TableRow} from "@mui/material"
 import {fetchEntry} from "../api"
 import {Plaintext} from "../model"
-import {Table, TableBody, TableCell, TableRow, TextField} from "@mui/material"
 
-type TlockEntryProps = {}
-
-export const TlockEntry = (props: TlockEntryProps) => {
+export const TlockEntry = () => {
     const {id} = useParams()
     const [entry, setEntry] = useState<Plaintext>()
     const [isLoading, setIsLoading] = useState(false)
@@ -50,6 +48,15 @@ export const TlockEntry = (props: TlockEntryProps) => {
                 <TableRow>
                     <TableCell>Plaintext</TableCell>
                     <TableCell>{entry.plaintext}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell>Tags</TableCell>
+                    <TableCell>{entry.tags.map(it =>
+                        <Chip
+                            variant="filled"
+                            label={it}
+                        />
+                    )}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

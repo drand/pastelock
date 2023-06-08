@@ -5,10 +5,12 @@ export type Ciphertext = {
     createdAt: number
     decryptableAt: number
     ciphertext: string
+    tags: Array<string>
 }
 
 export const ciphertextSchema = yup.object({
-    ciphertext: yup.string().required()
+    ciphertext: yup.string().required(),
+    tags: yup.array().of(yup.string().required()).required()
 }).required()
 
 export type Plaintext = {
@@ -17,4 +19,5 @@ export type Plaintext = {
     decryptableAt: number
     ciphertext: string
     plaintext: string
+    tags: Array<string>
 }

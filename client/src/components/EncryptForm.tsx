@@ -11,6 +11,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
     const [time, setTime] = useState(dayjs(formatDate(Date.now())))
     const [plaintext, setPlaintext] = useState("")
     const [ciphertext, setCiphertext] = useState("")
+    const [tags, setTags] = useState<Array<string>>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
 
@@ -26,7 +27,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
 
         setError("")
         setIsLoading(true)
-        encryptAndUpload(time.toDate().getTime(), plaintext)
+        encryptAndUpload(time.toDate().getTime(), plaintext, tags)
             .then(c => setCiphertext(c))
             .catch(err => setError(err.message))
             .then(() => setIsLoading(false))
@@ -67,7 +68,11 @@ export const EncryptForm = (props: EncryptFormProps) => {
                     {dateAdvisoryText}
                 </Typography>
             </Box>
-            <TagsInput max={5}/>
+            <TagsInput
+                max={5}
+                tags={tags}
+                onChange={t => setTags(t)}
+            />
             <Stack
                 direction={"row"}
                 width={"100%"}

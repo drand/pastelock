@@ -1,33 +1,34 @@
 import * as React from "react"
-import {Box, Button, Chip, Stack, TextField, Typography} from "@mui/material"
+import {Button, Chip, Stack, TextField, Typography} from "@mui/material"
 import {useCallback, useState} from "react"
 
 type TagsInputProps = {
     max?: number
+    tags: Array<string>
+    onChange: (tags: Array<string>) => void
 }
 export const TagsInput = (props: TagsInputProps) => {
     const [advisoryText, setAdvisoryText] = useState("")
-    const [tags, setTags] = useState<Array<string>>([])
     const [currentTag, setCurrentTag] = useState("")
 
-    const tagsMaxed = !!props.max && tags.length >= props.max
+    const tagsMaxed = !!props.max && props.tags.length >= props.max
     if (tagsMaxed) {
         setAdvisoryText(`You can only set a maximum of ${props.max} tags`)
     }
 
     const appendTag = useCallback((tag: string) => {
-        if (!!tags.find(it => it === tag)) {
+        if (!!props.tags.find(it => it === tag)) {
             setAdvisoryText("You can't add duplicate tags")
             return
         }
         setAdvisoryText("")
-        setTags([...tags, tag])
+        props.onChange([...props.tags, tag])
         setCurrentTag("")
-    }, [tags])
+    }, [props.tags])
 
     const removeTag = useCallback((tag: string) => {
-        setTags([...tags.filter(it => it !== tag)])
-    }, [tags])
+        props.onChange([...props.tags.filter(it => it !== tag)])
+    }, [props.tags])
 
     return (
         <Stack
@@ -51,7 +52,7 @@ export const TagsInput = (props: TagsInputProps) => {
                 >
                     Add
                 </Button>
-                {tags.map(t =>
+                {props.tags.map(t =>
                     <Chip
                         variant="filled"
                         label={ellipsise(t, 10)}

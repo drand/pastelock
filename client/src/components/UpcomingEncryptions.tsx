@@ -35,6 +35,7 @@ function remapCiphertexts(ciphertexts: Array<Ciphertext>): Array<SidebarEntry> {
     return ciphertexts.map(it => ({
         id: it.id,
         time: it.decryptableAt,
-        content: it.ciphertext
+        content: it.ciphertext,
+        tags: it.tags
     }))
 }

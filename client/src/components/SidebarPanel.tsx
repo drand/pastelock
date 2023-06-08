@@ -6,6 +6,7 @@ export type SidebarEntry = {
     id: string
     time: number
     content: string
+    tags: Array<string>
 }
 type SidebarPanelProps = {
     title: string
@@ -48,6 +49,7 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
             >
                 <Typography>Time: {formattedTime}</Typography>
                 <Typography>Content: {content}</Typography>
+                <Typography>Tags: {props.entry.tags.join(", ")}</Typography>
             </Box>
         </Paper>
     )

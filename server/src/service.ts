@@ -41,7 +41,7 @@ export class Service {
         }
         const decryptableAt = decryptionTime(decodedCiphertext)
 
-        const ciphertext = await storeCiphertext(this.client, decodedCiphertext, decryptableAt)
+        const ciphertext = await storeCiphertext(this.client, decodedCiphertext, decryptableAt, validMessage.tags)
         return {id: ciphertext.id}
     }
 

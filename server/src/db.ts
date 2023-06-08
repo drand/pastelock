@@ -1,4 +1,4 @@
-import {Client} from "pg"
+import {Client, ClientConfig} from "pg"
 import {Config} from "./config"
 import {Ciphertext, Plaintext} from "./model"
 
@@ -8,19 +8,30 @@ type Row = {
     decryptable_at: number
     ciphertext: string
     plaintext: string
+    tags: string
 }
 
 export async function createConnectedClient(config: Config): Promise<Client> {
+    const clientConf: ClientConfig = {
+        host: config.dbURL,
+        user: config.dbUsername,
+        port: config.dbPort,
+        database: config.dbName,
+        password: config.dbPassword,
+    }
+    if (config.ssl) {
+        clientConf.ssl = {
+            rejectUnauthorized: false
+        }
+    }
     const client = new Client({
         host: config.dbURL,
         user: config.dbUsername,
         port: config.dbPort,
         database: config.dbName,
         password: config.dbPassword,
-        ssl:  {
-            rejectUnauthorized: false
-        }
     })
+
     await client.connect()
     await client.query(bootstrap)
     return client
@@ -32,7 +43,8 @@ export async function fetchCiphertexts(client: Client, limit: number = 50): Prom
         id: it.id,
         createdAt: it.created_at,
         decryptableAt: it.decryptable_at,
-        ciphertext: it.ciphertext
+        ciphertext: it.ciphertext,
+        tags: it.tags as any ?? []
     }))
 }
 
@@ -43,32 +55,36 @@ export async function fetchPlaintexts(client: Client, limit: number = 50): Promi
         createdAt: it.created_at,
         decryptableAt: it.decryptable_at,
         ciphertext: it.ciphertext,
-        plaintext: it.plaintext
+        plaintext: it.plaintext,
+        tags: it.tags as any ?? []
     }))
 }
 
 export async function fetchEntry(client: Client, id: string): Promise<Plaintext> {
     const result = await client.query<Row>(selectSingle, [id])
     const row = result.rows[0]
+
     return {
         id: row.id,
         createdAt: row.created_at,
         decryptableAt: row.decryptable_at,
         ciphertext: row.ciphertext,
-        plaintext: row.plaintext ?? ""
+        plaintext: row.plaintext ?? "",
+        tags: row.tags as any ?? []
     }
 }
 
-export async function storeCiphertext(client: Client, ciphertext: string, decryptableAt: number): Promise<Ciphertext> {
+export async function storeCiphertext(client: Client, ciphertext: string, decryptableAt: number, tags: Array<string>): Promise<Ciphertext> {
     const now = new Date()
-    const result = await client.query(insertCiphertext, [now, new Date(decryptableAt), ciphertext])
+    const result = await client.query(insertCiphertext, [now, new Date(decryptableAt), ciphertext, JSON.stringify(tags)])
 
     const row = result.rows[0]
     return {
         id: row.id,
         createdAt: now.getTime(),
         decryptableAt,
-        ciphertext
+        ciphertext,
+        tags
     }
 }
 
@@ -86,7 +102,8 @@ const bootstrap = `
         created_at TIMESTAMP NOT NULL,
         decryptable_at TIMESTAMP NOT NULL,
         ciphertext VARCHAR NOT NULL,
-        plaintext VARCHAR
+        plaintext VARCHAR,
+        tags JSONB
     );
 `
 
@@ -114,7 +131,7 @@ const selectSingle = `
 `
 
 const insertCiphertext = `
-    INSERT INTO ${tableName} (created_at, decryptable_at, ciphertext) VALUES($1, $2, $3) RETURNING *
+    INSERT INTO ${tableName} (created_at, decryptable_at, ciphertext, tags) VALUES($1, $2, $3, $4) RETURNING *
 `
 const updatePlaintext = `
     UPDATE ${tableName} SET plaintext = $2 WHERE id = $1

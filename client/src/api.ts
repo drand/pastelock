@@ -7,7 +7,7 @@ const config = {
     pastelockURL: process.env.API_URL ?? "http://localhost:4444"
 }
 
-export async function encryptAndUpload(time: number, plaintext: string): Promise<string> {
+export async function encryptAndUpload(time: number, plaintext: string, tags: Array<string>): Promise<string> {
     const roundNumber = roundAt(time, MAINNET_CHAIN_INFO)
     const ciphertext = await timelockEncrypt(roundNumber, Buffer.from(plaintext), mainnetClient())
 
@@ -15,7 +15,8 @@ export async function encryptAndUpload(time: number, plaintext: string): Promise
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            ciphertext: Buffer.from(ciphertext).toString("base64")
+            ciphertext: Buffer.from(ciphertext).toString("base64"),
+            tags,
         })
     })
 

@@ -3,6 +3,7 @@ export type Ciphertext = {
     createdAt: number
     decryptableAt: number
     ciphertext: string
+    tags: Array<string>
 }
 
 export type Plaintext = {
@@ -11,4 +12,5 @@ export type Plaintext = {
     decryptableAt: number
     ciphertext: string
     plaintext: string
+    tags: Array<string>
 }
