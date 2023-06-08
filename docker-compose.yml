@@ -4,19 +4,22 @@ services:
   client:
     build: ./client
     ports:
-      - 1234:1234
+      - "1234:1234"
     environment:
-      API_URL: http://server:4444
+      API_URL: http://localhost:4444
+      PORT: 1234
 
   server:
     build: ./server
     ports:
-      - 4444:4444
+      - "4444:4444"
     environment:
       DB_URL: db
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: test
+      DB_SSL: false
+      DB_NAME: postgres
 
   db:
     image: postgres

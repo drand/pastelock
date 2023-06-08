@@ -26,3 +26,21 @@ automatically decrypts and serves once the decryption time has been reached.
 
 Start the server by running `cd server && npm install && npm start`. The default port is `4444`.
 
+## Environment
+
+The server requires a few environment variables set for running in production (or outside docker)
+
+### DB_URL
+The URL of the DB, with or without `postgres://`. Post unnecessary
+
+### DB_PORT
+The port the DB instance is using
+
+### DB_NAME
+The database name in which to store everything. This isn't automatically provisioned by the bootstrap (though is by docker compose).
+
+### DB_USERNAME
+### DB_PASSWORD
+### DB_SSL
+## Deployment
+Pastelock is 

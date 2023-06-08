@@ -35,13 +35,16 @@ export class Service {
 
     async addCiphertext(message: any): Promise<AddCiphertextResponse> {
         const validMessage = await ciphertextSchema.validate(message)
-        let decodedCiphertext = Buffer.from(validMessage.ciphertext, "base64").toString()
-        if (isProbablyArmored(decodedCiphertext)) {
-            decodedCiphertext = decodeArmor(decodedCiphertext)
-        }
-        const decryptableAt = decryptionTime(decodedCiphertext)
+        const ciphertextEncoded = Buffer.from(validMessage.ciphertext, "base64").toString()
 
-        const ciphertext = await storeCiphertext(this.client, decodedCiphertext, decryptableAt, validMessage.tags)
+        let decryptableAt: number
+        if (isProbablyArmored(ciphertextEncoded)) {
+            decryptableAt = decryptionTime(decodeArmor(ciphertextEncoded))
+        } else {
+            decryptableAt = decryptionTime(ciphertextEncoded)
+        }
+
+        const ciphertext = await storeCiphertext(this.client, ciphertextEncoded, decryptableAt, validMessage.tags)
         return {id: ciphertext.id}
     }
 
