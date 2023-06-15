@@ -4,12 +4,16 @@ A social web-app for timelocking encrypting data, automatic decryption of it, an
 
 ## Quickstart
 To spin up the whole application, run `docker compose build && docker compose up -d`.
-This will start the UI at `http://localhost:1234`, the API at `http://localhost:4444` and a postgres database at `postgresql://localhost:5342`.
-You can then open [http://localhost:1234](http://localhost:1234) in your browser to start adding ciphertexts!
+This will start the app at `http://localhost:4444` and a postgres database at `postgresql://localhost:5342`.
+You can then open [http://localhost:4444](http://localhost:4444) in your browser to start adding ciphertexts!
 Encryption is performed locally before uploading to the server.
+The UI is server rendered and hydrated in a light client bundle.
 
 
 ## Development
+
+The API_URL is injected into the client at build time using either the `./build.dev.js` or `./build.prod.js` files.
+Similarly, the scripts are split into `:dev` and `:prod` variants. Deploying to heroku will automatically build the production package.
 
 ## [./client](./client)
 
@@ -40,7 +44,13 @@ The port the DB instance is using
 The database name in which to store everything. This isn't automatically provisioned by the bootstrap (though is by docker compose).
 
 ### DB_USERNAME
+The Username used to connect to the database
+
 ### DB_PASSWORD
+The password used to connect to the database
+
 ### DB_SSL
+Whether the DB supports TLS or not. Out of the box, it allows self-signed certs (as that's what Heroku uses).
+
 ## Deployment
-Pastelock is 
+Pastelock is  hosted on heroku. First login to the heroku CLI then use `npm run deploy` to deploy to it.

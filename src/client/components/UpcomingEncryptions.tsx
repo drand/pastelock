@@ -1,15 +1,18 @@
 import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
-import {fetchCiphertexts} from "../api"
+import {APIConfig, fetchCiphertexts} from "../api"
 import {Ciphertext} from "../model"
 
 const refreshTimeMs = 5000
-export const UpcomingEncryptions = () => {
+type UpcomingEncryptionsProps = {
+    config: APIConfig
+}
+export const UpcomingEncryptions = (props: UpcomingEncryptionsProps) => {
     const [ciphertexts, setCiphertexts] = useState<Array<SidebarEntry>>([])
 
     const apiCall = useCallback(() => {
-        fetchCiphertexts()
+        fetchCiphertexts(props.config)
             .then(remapCiphertexts)
             .then((c) => setCiphertexts(c))
     }, [setCiphertexts])

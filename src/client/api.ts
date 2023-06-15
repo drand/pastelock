@@ -3,15 +3,15 @@ import {mainnetClient, timelockEncrypt, Buffer} from "tlock-js"
 import {MAINNET_CHAIN_INFO} from "tlock-js/drand/defaults"
 import {Ciphertext, Plaintext} from "./model"
 
-const config = {
-    pastelockURL: process.env.API_URL ?? "http://localhost:4444"
+export type APIConfig = {
+    apiURL: string
 }
 
-export async function encryptAndUpload(time: number, plaintext: string, tags: Array<string>): Promise<string> {
+export async function encryptAndUpload(config: APIConfig, time: number, plaintext: string, tags: Array<string>): Promise<string> {
     const roundNumber = roundAt(time, MAINNET_CHAIN_INFO)
     const ciphertext = await timelockEncrypt(roundNumber, Buffer.from(plaintext), mainnetClient())
 
-    await fetch(`${config.pastelockURL}/ciphertexts`, {
+    await fetch(`${config.apiURL}/ciphertexts`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
@@ -23,21 +23,21 @@ export async function encryptAndUpload(time: number, plaintext: string, tags: Ar
     return ciphertext
 }
 
-export async function fetchCiphertexts(): Promise<Array<Ciphertext>> {
+export async function fetchCiphertexts(config: APIConfig): Promise<Array<Ciphertext>> {
     const limit = 5
-    const response = await fetch(`${config.pastelockURL}/ciphertexts?limit=${limit}`)
+    const response = await fetch(`${config.apiURL}/ciphertexts?limit=${limit}`)
     const json = await response.json()
     return json.ciphertexts
 }
 
-export async function fetchPlaintexts(): Promise<Array<Plaintext>> {
+export async function fetchPlaintexts(config: APIConfig): Promise<Array<Plaintext>> {
     const limit = 5
-    const response = await fetch(`${config.pastelockURL}/plaintexts?limit=${limit}`)
+    const response = await fetch(`${config.apiURL}/plaintexts?limit=${limit}`)
     const json = await response.json()
     return json.plaintexts
 }
 
-export async function fetchEntry(id: string): Promise<Plaintext> {
-    const response = await fetch(`${config.pastelockURL}/entry/${id}`)
+export async function fetchEntry(config: APIConfig, id: string): Promise<Plaintext> {
+    const response = await fetch(`${config.apiURL}/entry/${id}`)
     return await response.json()
 }

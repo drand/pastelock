@@ -1,23 +1,27 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "commonjs",
     "target": "esnext",
     "sourceMap": true,
     "declarationDir": "./",
-    "moduleResolution": "classic",
+    "moduleResolution": "node",
     "allowJs": true,
     "esModuleInterop": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
       "esnext",
-      "dom",
-      "scripthost"
+      "scripthost",
+      "dom"
     ],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "types": [
+      "node"
+    ],
+    "jsx": "react"
   },
   "include": [
     "src/**/*.ts"

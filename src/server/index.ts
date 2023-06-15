@@ -1,17 +1,32 @@
 import express = require("express")
 import cors = require("cors")
+import * as Server from "react-dom/server"
+import createCache from "@emotion/cache"
+import createEmotionServer from "@emotion/server/create-instance"
 import {Service} from "./service"
 import {createConnectedClient} from "./db"
 import {createConfig} from "./config"
+import {indexTemplate} from "../client/index-template"
+import {ServerApp} from "./ServerApp"
 
 async function start() {
     const app = express()
     app.use(cors())
     app.use(express.json())
+    app.use("/public", express.static("public"))
 
     const db = await createConnectedClient(createConfig())
     const service = new Service(db)
 
+    app.get("/", (req, res) => {
+        const cache =   createCache({ key: "css" })
+        const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
+        const html = Server.renderToString(ServerApp(req))
+
+        const emotionChunks = extractCriticalToChunks(html)
+        const emotionCss = constructStyleTagsFromChunks(emotionChunks)
+        res.send(indexTemplate(html, emotionCss))
+    })
     app.get("/ciphertexts", (req: express.Request, res: express.Response) => {
 
         return service.ciphertexts(parseLimit(req, res))
@@ -54,22 +69,20 @@ async function start() {
         console.log(`API started on ${port}`)
         service.startDecrypting().then(() => console.log("started decryption service"))
     })
+}
+function parseLimit(req: express.Request, res: express.Response): number | undefined {
+    const {limit} = req.query
+    if (!limit) {
+        return undefined
+    }
 
-    function parseLimit(req: express.Request, res: express.Response): number | undefined {
-        const {limit} = req.query
-        if (!limit) {
-            return undefined
-        }
-
-        try {
-            return Number.parseInt(<string>limit)
-        } catch (err) {
-            res.status(400).send({error: "limit param must be a number"})
-            throw err
-        }
+    try {
+        return Number.parseInt(<string>limit)
+    } catch (err) {
+        res.status(400).send({error: "limit param must be a number"})
+        throw err
     }
 }
-
 start()
     .catch(err => {
         console.error(err.message)

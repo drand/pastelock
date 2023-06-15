@@ -14,7 +14,7 @@ export function createConfig(): Config {
         dbName: envOrExplode("DB_NAME"),
         dbUsername: envOrExplode("DB_USERNAME"),
         dbPassword: envOrExplode("DB_PASSWORD"),
-        ssl: !!process.env["DB_SSL"],
+        ssl: process.env["DB_SSL"] === "true",
     }
 }
 

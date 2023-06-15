@@ -2,17 +2,20 @@ import * as React from "react"
 import {useParams} from "react-router-dom"
 import {useEffect, useState} from "react"
 import {Chip, Table, TableBody, TableCell, TableRow} from "@mui/material"
-import {fetchEntry} from "../api"
+import {APIConfig, fetchEntry} from "../api"
 import {Plaintext} from "../model"
 
-export const TlockEntry = () => {
+type TlockEntryProps = {
+    config: APIConfig
+}
+export const TlockEntry = (props: TlockEntryProps) => {
     const {id} = useParams()
     const [entry, setEntry] = useState<Plaintext>()
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         setIsLoading(true)
-        fetchEntry(id)
+        fetchEntry(props.config, id)
             .then(e => setEntry(e))
             .catch(err => {
                 console.error(err)

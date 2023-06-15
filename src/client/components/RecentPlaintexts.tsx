@@ -1,15 +1,19 @@
 import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
-import {fetchPlaintexts} from "../api"
+import {APIConfig, fetchPlaintexts} from "../api"
 import {Plaintext} from "../model"
 
 const refreshTimeMs = 5000
-export const RecentPlaintexts = () => {
+
+type RecentPlaintextsProps = {
+    config: APIConfig
+}
+export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
     const [plaintexts, setPlaintexts] = useState<SidebarEntry[]>([])
 
     const apiCall = useCallback(() => {
-        fetchPlaintexts()
+        fetchPlaintexts(props.config)
             .then(remapPlaintexts)
             .then((c) => setPlaintexts(c))
     }, [setPlaintexts])

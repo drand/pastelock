@@ -1,12 +1,14 @@
 import * as React from "react"
-import * as dayjs from "dayjs"
+import dayjs from "dayjs"
 import {useCallback, useState} from "react"
 import {Box, Button, CircularProgress, Stack, TextField, Typography} from "@mui/material"
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker"
-import {encryptAndUpload} from "../api"
+import {APIConfig, encryptAndUpload} from "../api"
 import {TagsInput} from "./TagsInput"
 
-type EncryptFormProps = {}
+type EncryptFormProps = {
+    config: APIConfig
+}
 export const EncryptForm = (props: EncryptFormProps) => {
     const [time, setTime] = useState(dayjs(formatDate(Date.now())))
     const [plaintext, setPlaintext] = useState("")
@@ -27,7 +29,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
 
         setError("")
         setIsLoading(true)
-        encryptAndUpload(time.toDate().getTime(), plaintext, tags)
+        encryptAndUpload(props.config, time.toDate().getTime(), plaintext, tags)
             .then(c => setCiphertext(c))
             .catch(err => setError(err.message))
             .then(() => setIsLoading(false))
