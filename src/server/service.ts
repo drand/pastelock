@@ -4,7 +4,7 @@ import {MAINNET_CHAIN_INFO} from "tlock-js/drand/defaults"
 import {decodeArmor, isProbablyArmored} from "tlock-js/age/armor"
 import {readAge} from "tlock-js/age/age-reader-writer"
 import {Ciphertext, ciphertextSchema, Plaintext} from "./model"
-import {fetchCiphertexts, fetchEntry, fetchPlaintexts, storeCiphertext, storePlaintext} from "./db"
+import {fetchCiphertexts, fetchEntry, fetchPlaintexts, fetchTaggedEntries, storeCiphertext, storePlaintext} from "./db"
 
 type CiphertextsResponse = {
     ciphertexts: Array<Ciphertext>
@@ -50,6 +50,10 @@ export class Service {
 
     async byId(id: string): Promise<Plaintext> {
         return fetchEntry(this.client, id)
+    }
+
+    async searchTags(tag: string): Promise<Array<Plaintext>> {
+        return fetchTaggedEntries(this.client, tag)
     }
 
     async startDecrypting() {

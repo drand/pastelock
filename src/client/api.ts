@@ -41,3 +41,9 @@ export async function fetchEntry(config: APIConfig, id: string): Promise<Plainte
     const response = await fetch(`${config.apiURL}/entry/${id}`)
     return await response.json()
 }
+
+export async function fetchTags(config: APIConfig, tag: string): Promise<Array<Plaintext>> {
+    const response = await fetch(`${config.apiURL}/tags/?search=${tag}`)
+    const json = await response.json()
+    return json.entries
+}

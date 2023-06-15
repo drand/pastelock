@@ -14,6 +14,9 @@ export const TlockEntry = (props: TlockEntryProps) => {
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
+        if (!id) {
+            return
+        }
         setIsLoading(true)
         fetchEntry(props.config, id)
             .then(e => setEntry(e))

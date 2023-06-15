@@ -20,8 +20,8 @@ async function start() {
     const service = new Service(db)
 
     app.get("/", (req, res) => {
-        const cache =   createCache({ key: "css" })
-        const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
+        const cache = createCache({key: "css"})
+        const {extractCriticalToChunks, constructStyleTagsFromChunks} = createEmotionServer(cache);
         const html = Server.renderToString(ServerApp(req))
 
         const emotionChunks = extractCriticalToChunks(html)
@@ -65,12 +65,28 @@ async function start() {
             })
     })
 
+    app.get("/tags", (req: express.Request, res: express.Response) => {
+        const {search} = req.query
+
+        if (!search) {
+            return res.status(400).send({error: "you must pass a tag to search for"})
+        }
+
+        service.searchTags(search as string)
+            .then(entries => res.status(200).send({entries}))
+            .catch(err => {
+                console.error("error searching tags", err)
+                res.status(400).json({error: "could not search tags"})
+            })
+    })
+
     const port = process.env.PORT ?? 4444
     app.listen(port, () => {
         console.log(`API started on ${port}`)
         service.startDecrypting().then(() => console.log("started decryption service"))
     })
 }
+
 function parseLimit(req: express.Request, res: express.Response): number | undefined {
     const {limit} = req.query
     if (!limit) {
@@ -84,6 +100,7 @@ function parseLimit(req: express.Request, res: express.Response): number | undef
         throw err
     }
 }
+
 start()
     .catch(err => {
         console.error(err.message)

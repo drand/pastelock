@@ -4,7 +4,7 @@ import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {APIConfig, fetchPlaintexts} from "../api"
 import {Plaintext} from "../model"
 
-const refreshTimeMs = 5000
+const refreshTimeMs = 10000
 
 type RecentPlaintextsProps = {
     config: APIConfig

@@ -40,6 +40,7 @@ export const EncryptForm = (props: EncryptFormProps) => {
         setPlaintext("")
         setCiphertext("")
         setError("")
+        setTags([])
     }, [])
 
     let dateAdvisoryText = ""

@@ -82,6 +82,19 @@ export async function storePlaintext(client: Client, id: string, plaintext: stri
     return await client.query(updatePlaintext, [id, plaintext])
 }
 
+export async function fetchTaggedEntries(client: Client, tag: string): Promise<Array<Plaintext>> {
+    const result = await client.query<Row>(selectTags, [JSON.stringify(tag)])
+
+    return result.rows.map(row => ({
+        id: row.id,
+        createdAt: row.created_at,
+        decryptableAt: row.decryptable_at,
+        ciphertext: row.ciphertext,
+        plaintext: row.plaintext ?? "",
+        tags: row.tags as any ?? []
+    }))
+}
+
 const tableName = "uploads"
 
 const bootstrap = `
@@ -125,4 +138,10 @@ const insertCiphertext = `
 `
 const updatePlaintext = `
     UPDATE ${tableName} SET plaintext = $2 WHERE id = $1
+`
+
+const selectTags = `
+    SELECT *
+    FROM uploads
+    WHERE tags @> $1::jsonb;
 `
