@@ -5,7 +5,7 @@ import {App} from "../client/App"
 
 const ServerApp = (req: express.Request) =>
     <StaticRouter location={req.url}>
-        <App config={{apiURL: "http://localhost:4444"}}/>
+        <App />
     </StaticRouter>
 
 export {ServerApp}
