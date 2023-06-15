@@ -1,7 +1,6 @@
 const { build } = require('esbuild')
 
 const options = {
-    stdio: 'inherit',
     entryPoints: ['./src/client/index.tsx'],
     outfile: './public/app.js',
     bundle: true,
@@ -12,4 +11,7 @@ const options = {
     },
 }
 
-build(options).catch(() => process.exit(1))
+build(options).catch(err => {
+    console.error(err)
+    process.exit(1)
+})
