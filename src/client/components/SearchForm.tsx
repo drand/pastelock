@@ -37,13 +37,15 @@ export const SearchForm = (props: SearchFormProps) => {
                 onChange={event => setQuery(event.target.value)}
             />
 
-            {isLoading
-                ? <CircularProgress/>
-                : results.length === 0
-                    ? <Typography>No results found</Typography>
-                    : <Box>
-                        <SidebarPanel title={""} values={remapPlaintexts(results)}/>
-                    </Box>
+            {query === ""
+                ? <Typography>Enter a tag to search by</Typography>
+                : isLoading
+                    ? <CircularProgress/>
+                    : results.length === 0
+                        ? <Typography>No results found</Typography>
+                        : <Box>
+                            <SidebarPanel title={""} values={remapPlaintexts(results)}/>
+                        </Box>
             }
 
         </Box>

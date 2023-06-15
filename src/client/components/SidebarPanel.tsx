@@ -1,6 +1,6 @@
 import * as React from "react"
 import {useNavigate} from "react-router-dom"
-import {Box, Paper, Typography} from "@mui/material"
+import {Box, Chip, Paper, Stack, Typography} from "@mui/material"
 
 export type SidebarEntry = {
     id: string
@@ -49,7 +49,21 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
             >
                 <Typography>Time: {formattedTime}</Typography>
                 <Typography>Content: {content}</Typography>
-                {props.entry.tags.length > 0 && <Typography>Tags: {props.entry.tags.join(", ")}</Typography>}
+                {props.entry.tags.length !== 0 &&
+                    <Stack
+                        direction={"row"}
+                        spacing={1}
+                        alignItems="center"
+                    >
+                        <Typography>Tags:</Typography>
+                        {props.entry.tags.map(tag =>
+                            <Chip
+                                variant="filled"
+                                label={tag}
+                            />
+                        )}
+                    </Stack>
+                }
             </Box>
         </Paper>
     )
