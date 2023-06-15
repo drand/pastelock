@@ -8,12 +8,13 @@ import {createConnectedClient} from "./db"
 import {createConfig} from "./config"
 import {indexTemplate} from "../client/index-template"
 import {ServerApp} from "./ServerApp"
+import * as path from "path"
 
 async function start() {
     const app = express()
     app.use(cors())
     app.use(express.json())
-    app.use("/public", express.static("public"))
+    app.use("/public", express.static(path.join(__dirname, "public")))
 
     const db = await createConnectedClient(createConfig())
     const service = new Service(db)
