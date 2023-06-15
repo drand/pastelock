@@ -49,7 +49,7 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
             >
                 <Typography>Time: {formattedTime}</Typography>
                 <Typography>Content: {content}</Typography>
-                <Typography>Tags: {props.entry.tags.join(", ")}</Typography>
+                {props.entry.tags.length > 0 && <Typography>Tags: {props.entry.tags.join(", ")}</Typography>}
             </Box>
         </Paper>
     )
