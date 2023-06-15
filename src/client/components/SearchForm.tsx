@@ -12,11 +12,13 @@ export const SearchForm = (props: SearchFormProps) => {
     const [query, setQuery] = useState("")
     const [isLoading, setLoading] = useState(false)
     const [results, setResult] = useState<Array<Plaintext>>([])
+
     useEffect(() => {
         if (!query) {
             return
         }
         setLoading(true)
+        // this is set with timeout to debounce user input
         const inflight = setTimeout(() =>
                 fetchTags(props.config, query)
                     .then(results => setResult(results))
@@ -37,16 +39,20 @@ export const SearchForm = (props: SearchFormProps) => {
                 onChange={event => setQuery(event.target.value)}
             />
 
-            {query === ""
-                ? <Typography>Enter a tag to search by</Typography>
-                : isLoading
-                    ? <CircularProgress/>
-                    : results.length === 0
-                        ? <Typography>No results found</Typography>
-                        : <Box>
-                            <SidebarPanel title={""} values={remapPlaintexts(results)}/>
+            <Box padding={1}>
+                {query === ""
+                    ? <Typography>Enter a tag to search by</Typography>
+                    : isLoading
+                        ? <Box padding={1}>
+                            <CircularProgress/>
                         </Box>
-            }
+                        : results.length === 0
+                            ? <Typography>No results found</Typography>
+                            : <Box>
+                                <SidebarPanel title={""} values={remapPlaintexts(results)}/>
+                            </Box>
+                }
+            </Box>
 
         </Box>
     )
