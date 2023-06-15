@@ -12,7 +12,7 @@
     "build:server": "esbuild ./src/server/index.ts --bundle --platform=node --outfile=./app.js",
     "start:dev": "npm run build:dev && node ./app.js",
     "start:prod": "npm run build:prod && node ./app.js",
-    "deploy": "git subtree push heroku-server master"
+    "deploy": "git push heroku master"
   },
   "repository": {
     "type": "git",
