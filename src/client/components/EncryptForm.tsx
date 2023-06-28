@@ -64,8 +64,8 @@ export const EncryptForm = (props: EncryptFormProps) => {
                     to see.</Typography>
                 <Typography>You can find its source on <a
                     href="https://github.com/drand/pastelock">GitHub</a>.</Typography>
-                <Typography>Don't want others to see your ciphertext? Want to encrypt a vulnerability report? Then check
-                    out <a href="https://timevault.drand.love">Timevault</a></Typography>.
+                <Typography>Don't want others to see your ciphertext? Want to encrypt a vulnerability report? Check
+                    out <a href="https://timevault.drand.love">Timevault</a></Typography>!
             </Box>
             <Box
                 paddingBottom={2}
