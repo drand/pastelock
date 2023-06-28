@@ -9,7 +9,6 @@ You can then open [http://localhost:4444](http://localhost:4444) in your browser
 Encryption is performed locally before uploading to the server.
 The UI is server rendered and hydrated in a light client bundle.
 
-
 ## Development
 
 The API_URL is injected into the client at build time using either the `./build.dev.js` or `./build.prod.js` files.
@@ -53,4 +52,4 @@ The password used to connect to the database
 Whether the DB supports TLS or not. Out of the box, it allows self-signed certs (as that's what Heroku uses).
 
 ## Deployment
-Pastelock is  hosted on heroku. First login to the heroku CLI then use `npm run deploy` to deploy to it.
+Pastelock is hosted on heroku. First login to the heroku CLI then use `npm run deploy` to deploy to it.

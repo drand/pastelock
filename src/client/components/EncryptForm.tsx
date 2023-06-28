@@ -56,6 +56,17 @@ export const EncryptForm = (props: EncryptFormProps) => {
 
     return (
         <Box padding={2}>
+            <Box paddingBottom={2}>
+                <Typography>Pastelock is an application for timelock encrypting data and storing it in the
+                    cloud. </Typography>
+                <Typography>Your ciphertext will automatically be decrypted when the time comes, and published for
+                    everybody
+                    to see.</Typography>
+                <Typography>You can find its source on <a
+                    href="https://github.com/drand/pastelock">GitHub</a>.</Typography>
+                <Typography>Don't want others to see your ciphertext? Want to encrypt a vulnerability report? Then check
+                    out <a href="https://timevault.drand.love">Timevault</a></Typography>.
+            </Box>
             <Box
                 paddingBottom={2}
             >
