@@ -109,7 +109,6 @@ const bootstrap = `
         tags JSONB
     );
 `
-
 const selectCiphertexts = `
     SELECT *
     FROM ${tableName}
@@ -117,29 +116,25 @@ const selectCiphertexts = `
     ORDER BY decryptable_at ASC
     LIMIT $1;
 `
-
 const selectPlaintexts = `
     SELECT *
     FROM ${tableName}
     WHERE plaintext IS NOT NULL
-    ORDER BY decryptable_at ASC
+    ORDER BY decryptable_at DESC
     LIMIT $1;
 `
-
 const selectSingle = `
     SELECT *
     FROM uploads
     WHERE id = $1
     LIMIT 1;
 `
-
 const insertCiphertext = `
     INSERT INTO ${tableName} (created_at, decryptable_at, ciphertext, tags) VALUES($1, $2, $3, $4) RETURNING *
 `
 const updatePlaintext = `
     UPDATE ${tableName} SET plaintext = $2 WHERE id = $1
 `
-
 const selectTags = `
     SELECT *
     FROM uploads
