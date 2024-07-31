@@ -3,6 +3,7 @@ export type Ciphertext = {
     createdAt: number
     decryptableAt: number
     ciphertext: string
+    uploadType: "file" | "text"
     tags: Array<string>
 }
 
@@ -12,5 +13,6 @@ export type Plaintext = {
     decryptableAt: number
     ciphertext: string
     plaintext: string
+    uploadType: "file" | "text"
     tags: Array<string>
 }

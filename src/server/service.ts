@@ -4,7 +4,15 @@ import {MAINNET_CHAIN_INFO} from "tlock-js/drand/defaults"
 import {decodeArmor, isProbablyArmored} from "tlock-js/age/armor"
 import {readAge} from "tlock-js/age/age-reader-writer"
 import {Ciphertext, ciphertextSchema, Plaintext} from "./model"
-import {fetchCiphertexts, fetchEntry, fetchPlaintexts, fetchTaggedEntries, storeCiphertext, storePlaintext} from "./db"
+import {
+    fetchAll,
+    fetchCiphertexts,
+    fetchEntry,
+    fetchPlaintexts,
+    fetchTaggedEntries,
+    storeCiphertext,
+    storePlaintext
+} from "./db"
 
 type CiphertextsResponse = {
     ciphertexts: Array<Ciphertext>
@@ -22,10 +30,15 @@ export class Service {
     constructor(private client: Client) {
     }
 
-    async plaintexts(limit: number = 50): Promise<PlaintextsResponse> {
-        const plaintexts = await fetchPlaintexts(this.client)
+    async all(limit: number = 1000): Promise<PlaintextsResponse> {
+        const plaintexts = await fetchAll(this.client, limit)
+        return {plaintexts: plaintexts}
+    }
 
-        return {plaintexts: plaintexts.slice(0, limit)}
+    async plaintexts(limit: number = 50): Promise<PlaintextsResponse> {
+        const plaintexts = await fetchPlaintexts(this.client, limit)
+
+        return {plaintexts}
     }
 
     async ciphertexts(limit: number = 50): Promise<CiphertextsResponse> {
@@ -44,7 +57,7 @@ export class Service {
             decryptableAt = decryptionTime(ciphertextEncoded)
         }
 
-        const ciphertext = await storeCiphertext(this.client, ciphertextEncoded, decryptableAt, validMessage.tags)
+        const ciphertext = await storeCiphertext(this.client, ciphertextEncoded, decryptableAt, validMessage.uploadType, validMessage.tags)
         return {id: ciphertext.id}
     }
 
@@ -74,8 +87,8 @@ export class Service {
                 if (!next) {
                     return
                 }
-                console.error(`error decrypting cipher text ${next.id}`, err)
-                await storePlaintext(this.client, next.id, "the payload was undecryptable")
+                console.error(`error decrypting ciphertext ${next.id}`, err)
+                await storePlaintext(this.client, next.id, Buffer.from("the payload was undecryptable", "utf-8"))
                 // we assume it's a malicious upload until there's an easy way to validate the ciphertext is valid :)
             }
         }, attemptDecryptionMilliseconds)

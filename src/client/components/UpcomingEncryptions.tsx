@@ -2,7 +2,7 @@ import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {APIConfig, fetchCiphertexts} from "../api"
-import {Ciphertext} from "../model"
+import {remapCiphertexts} from "./mappings"
 
 const refreshTimeMs = 5000
 type UpcomingEncryptionsProps = {
@@ -32,13 +32,4 @@ export const UpcomingEncryptions = (props: UpcomingEncryptionsProps) => {
         title={"Upcoming decryptions"}
         values={ciphertexts}
     />
-}
-
-function remapCiphertexts(ciphertexts: Array<Ciphertext>): Array<SidebarEntry> {
-    return ciphertexts.map(it => ({
-        id: it.id,
-        time: it.decryptableAt,
-        content: it.ciphertext,
-        tags: it.tags
-    }))
 }

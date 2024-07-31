@@ -1,11 +1,13 @@
 import * as React from "react"
 import {useNavigate} from "react-router-dom"
 import {Box, Chip, Paper, Stack, Typography} from "@mui/material"
+import {useEffect, useState} from "react"
 
 export type SidebarEntry = {
     id: string
     time: number
     content: string
+    uploadType: "file" | "text"
     tags: Array<string>
 }
 type SidebarPanelProps = {
@@ -26,18 +28,22 @@ export const SidebarPanel = (props: SidebarPanelProps) =>
 type SidebarEntryProps = {
     entry: SidebarEntry
 }
-const SidebarEntryPanel = (props: SidebarEntryProps) => {
+export const SidebarEntryPanel = (props: SidebarEntryProps) => {
     const navigate = useNavigate()
     const dateTime = new Date(props.entry.time)
     const formattedTime = `${dateTime.toLocaleDateString()} ${dateTime.toLocaleTimeString()}`
+    const [content, setContent] = useState("")
 
-    const charLimit = 50
-    let content = ""
-    if (props.entry.content.length <= charLimit) {
-        content = props.entry.content
-    } else {
-        content = props.entry.content.slice(0, charLimit) + "..."
-    }
+    const charLimit = 30
+
+    useEffect(() => {
+        if (props.entry.content.length <= charLimit) {
+            setContent(formatContent(props.entry.uploadType, props.entry.content))
+        } else {
+            setContent(formatContent(props.entry.uploadType, props.entry.content.slice(0, charLimit) + "..."))
+        }
+    }, [props.entry]);
+
 
     return (
         <Paper>
@@ -67,4 +73,12 @@ const SidebarEntryPanel = (props: SidebarEntryProps) => {
             </Box>
         </Paper>
     )
+}
+
+function formatContent(type: "file" | "text", content: string): string {
+     if (type === "file") {
+         return "click to view"
+     }
+
+     return Buffer.from(content, "base64").toString("utf-8")
 }

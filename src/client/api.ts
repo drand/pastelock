@@ -7,14 +7,15 @@ export type APIConfig = {
     apiURL: string
 }
 
-export async function encryptAndUpload(config: APIConfig, time: number, plaintext: string, tags: Array<string>): Promise<string> {
+export async function encryptAndUpload(config: APIConfig, time: number, uploadType: string, plaintext: Buffer, tags: Array<string>): Promise<string> {
     const roundNumber = roundAt(time, MAINNET_CHAIN_INFO)
-    const ciphertext = await timelockEncrypt(roundNumber, Buffer.from(plaintext), mainnetClient())
+    const ciphertext = await timelockEncrypt(roundNumber, plaintext, mainnetClient())
 
     await fetch(`${config.apiURL}/ciphertexts`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
+            uploadType,
             ciphertext: Buffer.from(ciphertext).toString("base64"),
             tags,
         })
@@ -23,15 +24,19 @@ export async function encryptAndUpload(config: APIConfig, time: number, plaintex
     return ciphertext
 }
 
-export async function fetchCiphertexts(config: APIConfig): Promise<Array<Ciphertext>> {
-    const limit = 5
+export async function fetchAll(config: APIConfig): Promise<Array<Plaintext>> {
+    const response = await fetch(`${config.apiURL}/all`)
+    const json = await response.json()
+    return json.plaintexts
+}
+
+export async function fetchCiphertexts(config: APIConfig, limit = 5): Promise<Array<Ciphertext>> {
     const response = await fetch(`${config.apiURL}/ciphertexts?limit=${limit}`)
     const json = await response.json()
     return json.ciphertexts
 }
 
-export async function fetchPlaintexts(config: APIConfig): Promise<Array<Plaintext>> {
-    const limit = 5
+export async function fetchPlaintexts(config: APIConfig, limit = 5): Promise<Array<Plaintext>> {
     const response = await fetch(`${config.apiURL}/plaintexts?limit=${limit}`)
     const json = await response.json()
     return json.plaintexts

@@ -12,6 +12,7 @@ import {RecentPlaintexts} from "./components/RecentPlaintexts"
 import {UpcomingEncryptions} from "./components/UpcomingEncryptions"
 import {EncryptForm} from "./components/EncryptForm"
 import {SearchForm} from "./components/SearchForm"
+import {AllList} from "./components/AllList"
 
 function App() {
     const config = {
@@ -31,11 +32,15 @@ function App() {
                                 <Route path="/" element={<EncryptForm config={config}/>}/>
                                 <Route path="/entry/:id" element={<TlockEntry config={config}/>}/>
                                 <Route path="/search" element={<SearchForm config={config}/>}/>
+                                <Route path="/all" element={<AllList config={config}/>}/>
                                 <Route path="/*" element={<ErrorPage/>}/>
                             </Routes>
                         </Box>
                         <Stack width={1 / 4}>
-                            <Button onClick={() => navigate("/search")}>Search tags</Button>
+                            <Stack direction="row" spacing={6}>
+                                <Button onClick={() => navigate("/search")}>Search tags</Button>
+                                <Button onClick={() => navigate("/all")}>View all</Button>
+                            </Stack>
                             <RecentPlaintexts config={config}/>
                             <UpcomingEncryptions config={config}/>
                         </Stack>
