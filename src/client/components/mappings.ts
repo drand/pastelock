@@ -15,7 +15,7 @@ export function remapCiphertexts(ciphertexts: Array<Ciphertext>): Array<SidebarE
     return ciphertexts.map(it => ({
         id: it.id,
         time: it.decryptableAt,
-        content: it.ciphertext,
+        content: Buffer.from(it.ciphertext).toString("base64"),
         uploadType: it.uploadType,
         tags: it.tags
     }))

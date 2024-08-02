@@ -76,9 +76,9 @@ export const SidebarEntryPanel = (props: SidebarEntryProps) => {
 }
 
 function formatContent(type: "file" | "text", content: string): string {
-     if (type === "file") {
-         return "click to view"
-     }
+    if (type === "file") {
+        return "click to view"
+    }
 
-     return Buffer.from(content, "base64").toString("utf-8")
+    return Buffer.from(content, "base64").toString("utf-8")
 }
