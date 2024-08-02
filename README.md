@@ -19,15 +19,16 @@ Similarly, the scripts are split into `:dev` and `:prod` variants. Deploying to 
 The client is a React app for timelock encrypting data in your browser and uploading it to an API server.
 Other users of the API server can see your timelock encrypted ciphertext and will be able to see the plaintext once
 decryption time has been reached.
-
-Start the client by running `cd client && npm install && npm start`. The default port is `1234`.
+It is server rendered by the server application.
 
 ## [./server](./server)
 
 The server is a NodeJS app with an express API for submitting timelock encrypted ciphertexts, which it stores and
-automatically decrypts and serves once the decryption time has been reached.
+automatically decrypts and serves once the decryption time has been reached. It also server renders the React client application.
 
-Start the server by running `cd server && npm install && npm start`. The default port is `4444`.
+You will need to configure a postgres database before starting the dev server, and export the required env vars detailed in [the config file](./src/server/config.ts) (and below).
+
+Start the local dev server by running `npm install && npm start:dev`. The default port is `4444`.
 
 ## Environment
 

@@ -2,7 +2,7 @@ import * as React from "react"
 import {useCallback, useEffect, useState} from "react"
 import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
 import {APIConfig, fetchPlaintexts} from "../api"
-import {Plaintext} from "../model"
+import {remapPlaintexts} from "./mappings"
 
 const refreshTimeMs = 10000
 
@@ -33,13 +33,4 @@ export const RecentPlaintexts = (props: RecentPlaintextsProps) => {
         title={"Recent decryptions"}
         values={plaintexts}
     />
-}
-
-function remapPlaintexts(plaintexts: Array<Plaintext>): Array<SidebarEntry> {
-    return plaintexts.map(it => ({
-        id: it.id,
-        time: it.decryptableAt,
-        content: it.plaintext,
-        tags: it.tags
-    }))
 }

@@ -1,5 +1,5 @@
-import express = require("express")
-import cors = require("cors")
+import express from "express"
+import cors from "cors"
 import * as Server from "react-dom/server"
 import createCache from "@emotion/cache"
 import createEmotionServer from "@emotion/server/create-instance"
@@ -13,7 +13,7 @@ import * as path from "path"
 async function start() {
     const app = express()
     app.use(cors())
-    app.use(express.json())
+    app.use(express.json({limit: "20mb"}))
     app.use("/public", express.static(path.join(__dirname, "public")))
 
     const db = await createConnectedClient(createConfig())
@@ -28,56 +28,74 @@ async function start() {
         const emotionCss = constructStyleTagsFromChunks(emotionChunks)
         res.send(indexTemplate(html, emotionCss))
     })
-    app.get("/ciphertexts", (req: express.Request, res: express.Response) => {
 
-        return service.ciphertexts(parseLimit(req, res))
-            .then(ciphertexts => res.json(ciphertexts))
-            .catch(err => {
-                console.error(err)
-                res.status(500).send()
-            })
+    app.get("/all", async (_: express.Request, res: express.Response) => {
+        try {
+            const plaintexts = await service.all()
+            return res.json(plaintexts)
+        } catch (err) {
+            console.error(err)
+            return res.status(500).send()
+        }
     })
 
-    app.get("/plaintexts", (req: express.Request, res: express.Response) => {
-        return service.plaintexts(parseLimit(req, res))
-            .then(plaintexts => res.json(plaintexts))
-            .catch(err => {
-                console.error(err)
-                res.status(500).send()
-            })
+    app.get("/ciphertexts", async (req: express.Request, res: express.Response) => {
+        try {
+            const ciphertexts = await service.ciphertexts(parseLimit(req, res))
+            return res.json(ciphertexts)
+        } catch (err) {
+            console.error(err)
+            return res.status(500).send()
+        }
     })
 
-    app.get("/entry/:id", (req: express.Request, res: express.Response) => {
-        return service.byId(req.params.id)
-            .then(entry => res.send(entry))
-            .catch(err => {
-                console.error(err)
-                res.status(404).send({error: "no such entry"})
-            })
+    app.get("/plaintexts", async (req: express.Request, res: express.Response) => {
+        try {
+            const plaintexts = await service.plaintexts(parseLimit(req, res))
+            return res.json(plaintexts)
+        } catch (err) {
+            console.error(err)
+            return res.status(500).send()
+        }
     })
 
-    app.post("/ciphertexts", (req: express.Request, res: express.Response) => {
-        return service.addCiphertext(req.body)
-            .then(id => res.status(201).send(id))
-            .catch(err => {
-                console.error("error storing ciphertext", err)
-                res.status(400).json({error: "your ciphertext was not valid"})
-            })
+    app.get("/entry/:id", async (req: express.Request, res: express.Response) => {
+        try {
+            const entry = await service.byId(req.params.id)
+            return res.send(entry)
+        } catch (err) {
+            console.error(err)
+            return res.status(404).send({error: "no such entry"})
+        }
     })
 
-    app.get("/tags", (req: express.Request, res: express.Response) => {
+    app.post("/ciphertexts", async (req: express.Request, res: express.Response) => {
+        try {
+            const id = await service.addCiphertext(req.body)
+            return res.status(201).send(id)
+        } catch (err) {
+            console.error("error storing ciphertext", err)
+            res.status(400).json({error: "your ciphertext was not valid"})
+        }
+    })
+
+    app.get("/tags", async (req: express.Request, res: express.Response) => {
         const {search} = req.query
 
         if (!search) {
-            return res.status(400).send({error: "you must pass a tag to search for"})
+            return res.status(400)
+                .send({error: "you must pass a tag to search for"})
         }
 
-        service.searchTags(search as string)
-            .then(entries => res.status(200).send({entries}))
-            .catch(err => {
-                console.error("error searching tags", err)
-                res.status(400).json({error: "could not search tags"})
-            })
+        try {
+            const entries = await service.searchTags(search as string)
+            return res.status(200)
+                .send({entries})
+        } catch (err) {
+            console.error("error searching tags", err)
+            res.status(400)
+                .json({error: "could not search tags"})
+        }
     })
 
     const port = process.env.PORT ?? 4444

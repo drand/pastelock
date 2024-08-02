@@ -1,7 +1,7 @@
 import * as React from "react"
 import {useParams} from "react-router-dom"
-import {useEffect, useState} from "react"
-import {Chip, Table, TableBody, TableCell, TableRow} from "@mui/material"
+import {useCallback, useEffect, useState} from "react"
+import {Button, Chip, Table, TableBody, TableCell, TableRow, TextField} from "@mui/material"
 import {APIConfig, fetchEntry} from "../api"
 import {Plaintext} from "../model"
 
@@ -27,6 +27,13 @@ export const TlockEntry = (props: TlockEntryProps) => {
             .then(() => setIsLoading(false))
     }, [id])
 
+    const download = useCallback(() => {
+        if (!entry || !entry.plaintext) {
+            return
+        }
+        downloadFile(entry.id, Buffer.from(entry.plaintext, "base64"))
+    }, [entry])
+
     if (isLoading) {
         return <div>Loading...</div>
     }
@@ -34,6 +41,7 @@ export const TlockEntry = (props: TlockEntryProps) => {
     if (!entry) {
         return <div>No such entry</div>
     }
+
     return (
         <Table width={"100%"}>
             <TableBody>
@@ -48,14 +56,6 @@ export const TlockEntry = (props: TlockEntryProps) => {
                     <TableCell>{new Date(entry.decryptableAt).toLocaleString()}</TableCell>
                 </TableRow>
                 <TableRow>
-                    <TableCell>Ciphertext</TableCell>
-                    <TableCell>{entry.ciphertext}</TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell>Plaintext</TableCell>
-                    <TableCell>{entry.plaintext}</TableCell>
-                </TableRow>
-                <TableRow>
                     <TableCell>Tags</TableCell>
                     <TableCell>{entry.tags.map(it =>
                         <Chip
@@ -64,7 +64,43 @@ export const TlockEntry = (props: TlockEntryProps) => {
                         />
                     )}</TableCell>
                 </TableRow>
+                <TableRow>
+                    <TableCell>Plaintext</TableCell>
+                    <TableCell>
+                        {entry.plaintext.length === 0
+                            ? ""
+                            : entry.uploadType === "text"
+                                ? Buffer.from(entry.plaintext, "base64").toString("utf-8")
+                                : <Button onClick={download}>Download File</Button>
+                        }
+                    </TableCell>
+                </TableRow>
+
+                <TableRow>
+                    <TableCell>Ciphertext</TableCell>
+                    <TableCell>
+                        <TextField
+                            value={entry.ciphertext}
+                            variant={"filled"}
+                            fullWidth
+                            multiline
+                            disabled
+                            rows={20}
+                        />
+                    </TableCell>
+                </TableRow>
+
             </TableBody>
         </Table>
     )
+}
+
+function downloadFile(id: string, file: Buffer) {
+    const anchor = document.createElement("a")
+    const blob = new Blob([file.buffer], {type: "application/octet-stream"})
+    anchor.href = URL.createObjectURL(blob)
+    anchor.download = id
+    document.body.appendChild(anchor)
+    anchor.click()
+    document.body.removeChild(anchor)
 }

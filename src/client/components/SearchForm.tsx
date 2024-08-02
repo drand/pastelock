@@ -3,7 +3,8 @@ import {Box, CircularProgress, TextField, Typography} from "@mui/material"
 import {APIConfig, fetchTags} from "../api"
 import {useEffect, useState} from "react"
 import {Plaintext} from "../model"
-import {SidebarEntry, SidebarPanel} from "./SidebarPanel"
+import {SidebarPanel} from "./SidebarPanel"
+import {remapPlaintexts} from "./mappings"
 
 type SearchFormProps = {
     config: APIConfig
@@ -56,13 +57,4 @@ export const SearchForm = (props: SearchFormProps) => {
 
         </Box>
     )
-}
-
-function remapPlaintexts(plaintexts: Array<Plaintext>): Array<SidebarEntry> {
-    return plaintexts.map(it => ({
-        id: it.id,
-        time: it.decryptableAt,
-        content: it.plaintext,
-        tags: it.tags
-    }))
 }

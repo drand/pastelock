@@ -7,8 +7,9 @@ type Row = {
     created_at: number
     decryptable_at: number
     ciphertext: string
-    plaintext: string
+    plaintext_bytes: Buffer
     tags: string
+    upload_type: "file" | "text" | undefined
 }
 
 export async function createConnectedClient(config: Config): Promise<Client> {
@@ -27,72 +28,67 @@ export async function createConnectedClient(config: Config): Promise<Client> {
     return client
 }
 
+export async function fetchAll(client: Client, limit = 1000): Promise<Array<Plaintext>> {
+    const result = await client.query<Row>(selectAll, [limit])
+    return result.rows.map(asPlaintext)
+}
 export async function fetchCiphertexts(client: Client, limit: number = 50): Promise<Array<Ciphertext>> {
     const result = await client.query<Row>(selectCiphertexts, [limit])
-    return result.rows.map(it => ({
-        id: it.id,
-        createdAt: it.created_at,
-        decryptableAt: it.decryptable_at,
-        ciphertext: it.ciphertext,
-        tags: it.tags as any ?? []
-    }))
+    return result.rows.map(asCiphertext)
 }
 
 export async function fetchPlaintexts(client: Client, limit: number = 50): Promise<Array<Plaintext>> {
     const result = await client.query<Row>(selectPlaintexts, [limit])
-    return result.rows.map(it => ({
-        id: it.id,
-        createdAt: it.created_at,
-        decryptableAt: it.decryptable_at,
-        ciphertext: it.ciphertext,
-        plaintext: it.plaintext,
-        tags: it.tags as any ?? []
-    }))
+    return result.rows.map(asPlaintext)
 }
 
 export async function fetchEntry(client: Client, id: string): Promise<Plaintext> {
     const result = await client.query<Row>(selectSingle, [id])
     const row = result.rows[0]
 
-    return {
-        id: row.id,
-        createdAt: row.created_at,
-        decryptableAt: row.decryptable_at,
-        ciphertext: row.ciphertext,
-        plaintext: row.plaintext ?? "",
-        tags: row.tags as any ?? []
-    }
+    return asPlaintext(row)
 }
 
-export async function storeCiphertext(client: Client, ciphertext: string, decryptableAt: number, tags: Array<string>): Promise<Ciphertext> {
+export async function storeCiphertext(client: Client, ciphertext: string, decryptableAt: number, uploadType: "file" | "text", tags: Array<string>): Promise<Ciphertext> {
     const now = new Date()
-    const result = await client.query(insertCiphertext, [now, new Date(decryptableAt), ciphertext, JSON.stringify(tags)])
+    const result = await client.query(insertCiphertext, [now, new Date(decryptableAt), ciphertext, JSON.stringify(tags), uploadType])
 
     const row = result.rows[0]
-    return {
-        id: row.id,
-        createdAt: now.getTime(),
-        decryptableAt,
-        ciphertext,
-        tags
-    }
+    return asCiphertext(row)
 }
 
-export async function storePlaintext(client: Client, id: string, plaintext: string) {
+export async function storePlaintext(client: Client, id: string, plaintext: Buffer) {
     return await client.query(updatePlaintext, [id, plaintext])
 }
 
 export async function fetchTaggedEntries(client: Client, tag: string): Promise<Array<Plaintext>> {
     const result = await client.query<Row>(selectTags, [JSON.stringify(tag)])
 
-    return result.rows.map(row => ({
+    return result.rows.map(asPlaintext)
+}
+
+function asPlaintext(row: Row): Plaintext {
+    const bytes = row.plaintext_bytes ?? Buffer.from(new Uint8Array())
+    return {
         id: row.id,
         createdAt: row.created_at,
         decryptableAt: row.decryptable_at,
         ciphertext: row.ciphertext,
-        plaintext: row.plaintext ?? "",
+        plaintext: bytes.toString("base64"),
+        uploadType: row.upload_type ?? "text",
         tags: row.tags as any ?? []
-    }))
+    }
+}
+
+function asCiphertext(row: Row): Ciphertext {
+    return {
+        id: row.id,
+        createdAt: row.created_at ?? Date.now(),
+        decryptableAt: row.decryptable_at,
+        ciphertext: row.ciphertext,
+        tags: row.tags as any ?? [],
+        uploadType: row.upload_type ?? "text",
+    }
 }
 
 const tableName = "uploads"
@@ -108,18 +104,40 @@ const bootstrap = `
         plaintext VARCHAR,
         tags JSONB
     );
+    
+    -- this migrates old varchar plaintext to bytes
+    DO $$
+    BEGIN
+        BEGIN
+            ALTER TABLE ${tableName} ADD COLUMN plaintext_bytes BYTEA;
+            ALTER TABLE ${tableName} ADD COLUMN upload_type VARCHAR;
+            UPDATE ${tableName} SET upload_type = 'text';
+            UPDATE ${tableName} SET plaintext_bytes = plaintext::BYTEA;
+            ALTER TABLE ${tableName} DROP COLUMN plaintext;
+        EXCEPTION
+            WHEN duplicate_column THEN
+        END;
+    END $$;
 `
+
+const selectAll = `
+    SELECT *
+    FROM ${tableName}
+    ORDER BY decryptable_at ASC
+    LIMIT $1;
+`
+
 const selectCiphertexts = `
     SELECT *
     FROM ${tableName}
-    WHERE plaintext IS NULL
+    WHERE plaintext_bytes IS NULL
     ORDER BY decryptable_at ASC
     LIMIT $1;
 `
 const selectPlaintexts = `
     SELECT *
     FROM ${tableName}
-    WHERE plaintext IS NOT NULL
+    WHERE plaintext_bytes IS NOT NULL
     ORDER BY decryptable_at DESC
     LIMIT $1;
 `
@@ -130,13 +148,15 @@ const selectSingle = `
     LIMIT 1;
 `
 const insertCiphertext = `
-    INSERT INTO ${tableName} (created_at, decryptable_at, ciphertext, tags) VALUES($1, $2, $3, $4) RETURNING *
+    INSERT INTO ${tableName} (created_at, decryptable_at, ciphertext, tags, upload_type) VALUES($1, $2, $3, $4, $5) RETURNING *
 `
+
 const updatePlaintext = `
-    UPDATE ${tableName} SET plaintext = $2 WHERE id = $1
+    UPDATE ${tableName} SET plaintext_bytes = $2 WHERE id = $1
 `
+
 const selectTags = `
     SELECT *
-    FROM uploads
+    FROM ${tableName}
     WHERE tags @> $1::jsonb;
 `
